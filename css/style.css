@@ -62,3 +62,6 @@ h3:first-child{margin-top:0}
 .bd{flex-direction:row;align-items:flex-start;gap:8px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;color:var(--fg);font-size:14px}
 .bd small{display:block;color:var(--mut);font-size:11px;line-height:1.35}
 .big-btn{flex:1}
+
+.holds.win{max-height:360px;overflow-y:auto;padding:8px;border:1px solid var(--bd);border-radius:10px;background:var(--bg,transparent)}
+.holds.win:empty::before{content:'엽서가 없습니다. 아래에서 추가하세요.';color:var(--mut)}

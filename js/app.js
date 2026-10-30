@@ -36,7 +36,7 @@ function renderSituation() {
   $('nick').value = state.nick;
   $('rub').value = state.rub;
   $('luna').value = state.luna;
-  $('step').value = state.step;
+  $('step').value = 42 + 10 * state.step;
   $('guild').value = String(state.guild);
   $('famous').checked = !!state.famous;
   $('days').value = state.days;
@@ -145,7 +145,10 @@ function bind() {
   });
 
   const num = (id, key, min = 0) => $(id).addEventListener('input', () => { state[key] = Math.max(min, Math.floor(+$(id).value || 0)); scheduleSave(); });
-  num('rub', 'rub'); num('luna', 'luna'); num('step', 'step'); num('days', 'days', 1);
+  num('rub', 'rub'); num('luna', 'luna');
+  $('step').addEventListener('input', () => { state.step = Math.max(0, Math.round(((+$('step').value || 42) - 42) / 10)); scheduleSave(); });
+  $('step').addEventListener('change', () => { $('step').value = 42 + 10 * state.step; });
+  num('days', 'days', 1);
   $('guild').addEventListener('change', () => { state.guild = +$('guild').value; scheduleSave(); });
   $('famous').addEventListener('change', () => { state.famous = $('famous').checked; scheduleSave(); });
   $('nick').addEventListener('input', () => { state.nick = $('nick').value.trim(); scheduleSave(); });

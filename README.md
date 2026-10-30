@@ -15,7 +15,7 @@ js/profile.js         닉네임 → 우체통 정보 어댑터
 js/config.js          배포 설정 (profileApi 주소)
 data/cards.json       엽서 데이터 (크롤러가 채우는 파일)
 data/cards.example-event.json   이벤트·마이너스 엽서 형식 예시
-img/                  엽서 이미지 (FILENAMES.txt에 기대하는 파일명 목록이 있습니다)
+엽서 아이콘/          엽서 이미지 (cards.json의 image 값이 "엽서 아이콘/파일명.webp"를 가리킵니다)
 test/engine.test.mjs  엔진 테스트
 test/view.profile.test.mjs  화면 문자열·저장·닉네임 테스트
 test/app.smoke.test.mjs     가짜 DOM으로 화면 흐름 확인
@@ -35,7 +35,7 @@ test/app.smoke.test.mjs     가짜 DOM으로 화면 흐름 확인
 {
   "id": "dice",
   "name": "주사위엽서",
-  "image": "img/dice.webp",
+  "image": "엽서 아이콘/주사위 엽서.webp",
   "source": "shop",
   "price": { "currency": "루나", "amount": 50 },
   "fame": { "type": "table", "values": [[1, 8.22], [2, 8.33]] },

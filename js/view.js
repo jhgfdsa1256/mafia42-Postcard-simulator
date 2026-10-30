@@ -10,7 +10,7 @@ const cls = (n) => (Math.round(n) > 0 ? 'ok' : Math.round(n) < 0 ? 'bad' : '');
 /** 엽서 이미지. 파일이 없으면 이름 첫 글자가 보입니다. */
 export function thumb(c) {
   const initial = esc((c && c.name ? c.name : '?').trim().charAt(0));
-  const img = c && c.image ? `<img src="${esc(c.image)}" alt="" loading="lazy" onerror="this.remove()">` : '';
+  const img = c && c.image ? `<img src="${esc(encodeURI(c.image))}" alt="" loading="lazy" onerror="this.remove()">` : '';
   return `<span class="thumb"><b>${initial}</b>${img}</span>`;
 }
 
@@ -86,17 +86,17 @@ export function renderResults(P, R, recall) {
   if (B.skipped > 0) h += `<div class="box bad">명성 값이 없어 계산에서 뺀 엽서가 ${fmt(B.skipped)}장 있습니다. 우체통 목록에서 해당 엽서의 "명성" 칸을 채워 주세요.</div>`;
   h += statsTable(P);
 
-  h += `<h2>최적 계획 (${P.days}일)</h2><div class="box"><div class="big">목표 우체통 ${B.step}단계 (${42 + 10 * B.step}칸)</div>`
+  h += `<h2>최적 계획 (${P.days}일)</h2><div class="box"><div class="big">목표 우체통 ${42 + 10 * B.step}칸</div>`
     + `<div>기간 종료 시 <b>${fmt(B.rub)} 루블 · ${fmt(B.luna)} 루나</b></div>`
     + `<div class="mut">적용 테두리: ${esc(borderLabel(P.borders))}</div>`
-    + `<div class="mut">확장 없이 현재 단계 유지: ${fmt(Z.rub)} 루블 · ${fmt(Z.luna)} 루나 → 확장 이득 <span class="${cls(gain)}">${sg(gain)} 루블</span></div></div>`;
+    + `<div class="mut">확장 없이 현재 칸수 유지: ${fmt(Z.rub)} 루블 · ${fmt(Z.luna)} 루나 → 확장 이득 <span class="${cls(gain)}">${sg(gain)} 루블</span></div></div>`;
 
   h += '<h2>오늘의 추천</h2><div class="box">';
   const upToday = B.ups.filter((u) => u.day === 0);
   if (B.today.length || upToday.length) {
     h += '<ul class="flat">';
     B.today.forEach((t) => { h += `<li>${esc(t.name)} <b>${fmt(t.k)}장</b> 구매 (${fmt(t.cost)} ${t.currency})</li>`; });
-    upToday.forEach((u) => { h += `<li>우체통 ${u.step}단계로 확장 (${fmt(u.cost)} 루블)</li>`; });
+    upToday.forEach((u) => { h += `<li>우체통 ${42 + 10 * u.step}칸으로 확장 (${fmt(u.cost)} 루블)</li>`; });
     h += '</ul>';
   } else h += '<span class="mut">오늘 살 수 있는 이득 엽서가 없습니다 (빈 칸이 없거나 자금이 부족).</span>';
   h += '</div>';
@@ -105,29 +105,29 @@ export function renderResults(P, R, recall) {
 
   h += '<h2>우체통 확장 일정</h2><div class="box">';
   if (B.ups.length) {
-    h += '<div class="scroll"><table><tr><th>시점</th><th>단계</th><th>칸수</th><th>비용</th></tr>';
+    h += '<div class="scroll"><table><tr><th>시점</th><th>늘릴 칸수</th><th>비용</th></tr>';
     const long = B.ups.length > 30;
     B.ups.forEach((u, i) => {
-      if (long && i >= 15 && i < B.ups.length - 5) { if (i === 15) h += '<tr><td colspan="4" class="mut c">…</td></tr>'; return; }
-      h += `<tr><td>${u.day}일째</td><td>${u.step}</td><td>${42 + 10 * u.step}</td><td>${fmt(u.cost)}</td></tr>`;
+      if (long && i >= 15 && i < B.ups.length - 5) { if (i === 15) h += '<tr><td colspan="3" class="mut c">…</td></tr>'; return; }
+      h += `<tr><td>${u.day}일째</td><td>${42 + 10 * u.step}</td><td>${fmt(u.cost)}</td></tr>`;
     });
     h += '</table></div>';
   } else h += '<span class="mut">확장하지 않는 것이 최선입니다.</span>';
   h += '</div>';
 
-  h += '<h2>목표 단계별 비교</h2><div class="box scroll"><table><tr><th>목표 단계</th><th>최종 루블</th><th>최종 루나</th><th>최선 대비</th></tr>';
+  h += '<h2>목표 칸수별 비교</h2><div class="box scroll"><table><tr><th>목표 칸수</th><th>최종 루블</th><th>최종 루나</th><th>최선 대비</th></tr>';
   const cand = R.res.filter((x) => x.u <= R.bestU);
   const picks = new Set([0, cand.length - 1]);
   for (let k = 1; k < 7; k++) picks.add(Math.round((k * (cand.length - 1)) / 7));
   [...picks].sort((a, b) => a - b).forEach((i) => {
     const x = cand[i];
-    h += `<tr${x.u === R.bestU ? ' class="best"' : ''}><td>${x.u}${x.u === R.bestU ? ' (최적)' : ''}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td><td>${sg(x.rub - B.rub)}</td></tr>`;
+    h += `<tr${x.u === R.bestU ? ' class="best"' : ''}><td>${42 + 10 * x.u}${x.u === R.bestU ? ' (최적)' : ''}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td><td>${sg(x.rub - B.rub)}</td></tr>`;
   });
-  h += '</table><p class="sub">최적 단계를 넘는 목표는 남은 기간 안에 비용을 회수하지 못해 사지 않으므로 결과가 같습니다.</p></div>';
+  h += '</table><p class="sub">최적 칸수를 넘는 목표는 남은 기간 안에 비용을 회수하지 못해 사지 않으므로 결과가 같습니다.</p></div>';
 
-  h += '<h2>30일 단위 추이</h2><div class="box scroll"><table><tr><th>일</th><th>단계</th><th>칸수</th><th>사용 중</th><th>명성 합</th><th>루블</th><th>루나</th></tr>';
+  h += '<h2>30일 단위 추이</h2><div class="box scroll"><table><tr><th>일</th><th>칸수</th><th>사용 중</th><th>명성 합</th><th>루블</th><th>루나</th></tr>';
   const tl = B.tl.length > 16 ? B.tl.filter((x, i) => i % Math.ceil(B.tl.length / 14) === 0 || i === B.tl.length - 1) : B.tl;
-  tl.forEach((x) => { h += `<tr><td>${x.day}</td><td>${x.step}</td><td>${x.slots}</td><td>${fmt(x.N)}</td><td class="${cls(x.F)}">${fmt(x.F)}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td></tr>`; });
+  tl.forEach((x) => { h += `<tr><td>${x.day}</td><td>${x.slots}</td><td>${fmt(x.N)}</td><td class="${cls(x.F)}">${fmt(x.F)}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td></tr>`; });
   h += '</table></div>';
 
   h += '<div class="box"><b>기간 중 구매 합계</b><ul>';

@@ -27,28 +27,7 @@
     <p class="sub" style="margin:8px 0 0"><span id="saved"></span> <span id="status"></span></p>
   </section>
 
-  <h2>1. 내 상황</h2>
-  <section class="box grid">
-    <label>보유 루블<input id="rub" type="number" min="0" inputmode="numeric"></label>
-    <label>보유 루나<input id="luna" type="number" min="0" inputmode="numeric"></label>
-    <label>우체통 단계 (0 = 42칸)<input id="step" type="number" min="0" inputmode="numeric"></label>
-    <label>길드 랭크<select id="guild"></select></label>
-    <label>계산 기간 (일)<input id="days" type="number" min="1" max="1500" inputmode="numeric"></label>
-    <label class="check"><input id="famous" type="checkbox"> 유명세 보유 (+3%p)</label>
-  </section>
-
-  <h2>2. 지금 우체통에 있는 엽서</h2>
-  <div id="holdings" class="holds"></div>
-  <details class="box">
-    <summary>엽서 추가 (마이너스·이벤트 엽서 포함)</summary>
-    <div id="picker" class="tiles"></div>
-  </details>
-
-  <h2>3. 살 수 있는 상점 엽서</h2>
-  <p class="sub">체크를 끄면 계산에서 사지 않습니다.</p>
-  <div id="shop" class="chips"></div>
-
-  <h2>4. 테두리 (송신·수신 각각 하나만)</h2>
+  <h2>1. 테두리 (송신·수신 각각 하나만)</h2>
   <section class="box">
     <h3>송신 테두리</h3>
     <div id="sendBorders" class="borders"></div>
@@ -62,6 +41,27 @@
     </div>
     <p class="sub" style="margin:8px 0 0">송신 테두리 중 루블테는 내가 엽서를 보낼 때 받는 보너스이고, 나머지는 교환 상대도 같은 테두리를 쓴다고 보고 내 우체통에 들어오는 엽서의 값을 바꿉니다. 직접 입력한 명성은 바꾸지 않습니다.</p>
   </section>
+
+  <h2>2. 내 상황</h2>
+  <section class="box grid">
+    <label>보유 루블<input id="rub" type="number" min="0" inputmode="numeric"></label>
+    <label>보유 루나<input id="luna" type="number" min="0" inputmode="numeric"></label>
+    <label>우체통 칸수 (42, 52, 62 …)<input id="step" type="number" min="42" step="10" inputmode="numeric"></label>
+    <label>길드 랭크<select id="guild"></select></label>
+    <label>계산 기간 (일)<input id="days" type="number" min="1" max="1500" inputmode="numeric"></label>
+    <label class="check"><input id="famous" type="checkbox"> 유명세 보유 (+3%p)</label>
+  </section>
+
+  <h2>3. 살 수 있는 상점 엽서</h2>
+  <p class="sub">체크를 끄면 계산에서 사지 않습니다.</p>
+  <div id="shop" class="chips"></div>
+
+  <h2>4. 지금 우체통에 있는 엽서</h2>
+  <div id="holdings" class="holds win"></div>
+  <details class="box">
+    <summary>엽서 추가 (마이너스·이벤트 엽서 포함)</summary>
+    <div id="picker" class="tiles"></div>
+  </details>
 
   <div class="row" style="margin:14px 0">
     <button id="calc" type="button" class="big-btn">최적 계획 계산</button>
