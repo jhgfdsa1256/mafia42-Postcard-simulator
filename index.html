@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>마피아42 엽서 플래너</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main>
+  <h1>마피아42 엽서 플래너</h1>
+  <p class="sub">우체통을 효율적으로 운영하기 위한 계산기 · 입력값은 이 브라우저에 자동 저장됩니다.</p>
+
+  <div id="boot-error" class="box bad" hidden>
+    엽서 데이터(data/cards.json)를 불러오지 못했습니다. GitHub Pages로 배포했거나, 폴더에서 <code>python3 -m http.server</code> 로 연 주소(http://localhost:8000)에서 열어야 합니다. 파일을 더블클릭해서 열면 브라우저가 데이터 읽기를 막습니다.
+  </div>
+
+  <section class="box">
+    <div class="row">
+      <label class="grow">마피아42 닉네임<input id="nick" type="text" autocomplete="off" placeholder="닉네임"></label>
+      <button id="loadNick" type="button">불러오기</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label class="grow">저장된 정보<select id="savedList"></select></label>
+      <button id="delSaved" type="button" class="sec">삭제</button>
+    </div>
+    <p class="sub" style="margin:8px 0 0"><span id="saved"></span> <span id="status"></span></p>
+  </section>
+
+  <h2>1. 내 상황</h2>
+  <section class="box grid">
+    <label>보유 루블<input id="rub" type="number" min="0" inputmode="numeric"></label>
+    <label>보유 루나<input id="luna" type="number" min="0" inputmode="numeric"></label>
+    <label>우체통 단계 (0 = 42칸)<input id="step" type="number" min="0" inputmode="numeric"></label>
+    <label>길드 랭크<select id="guild"></select></label>
+    <label>계산 기간 (일)<input id="days" type="number" min="1" max="1500" inputmode="numeric"></label>
+    <label class="check"><input id="famous" type="checkbox"> 유명세 보유 (+3%p)</label>
+  </section>
+
+  <h2>2. 지금 우체통에 있는 엽서</h2>
+  <div id="holdings" class="holds"></div>
+  <details class="box">
+    <summary>엽서 추가 (마이너스·이벤트 엽서 포함)</summary>
+    <div id="picker" class="tiles"></div>
+  </details>
+
+  <h2>3. 살 수 있는 상점 엽서</h2>
+  <p class="sub">체크를 끄면 계산에서 사지 않습니다.</p>
+  <div id="shop" class="chips"></div>
+
+  <div class="row" style="margin:14px 0">
+    <button id="calc" type="button" class="big-btn">최적 계획 계산</button>
+  </div>
+
+  <div id="out"></div>
+
+  <h2>백업</h2>
+  <section class="box">
+    <div class="row" style="margin-bottom:8px">
+      <button id="exp" type="button" class="sec">내보내기</button>
+      <button id="imp" type="button" class="sec">붙여넣은 내용 적용</button>
+    </div>
+    <textarea id="json" placeholder="내보내기를 누르면 저장된 모든 정보가 여기에 나옵니다. 다른 기기에서는 붙여넣고 '붙여넣은 내용 적용'을 누르세요."></textarea>
+  </section>
+
+  <p class="sub">엽서 수치 출처: 커뮤니티 자료와 나무위키(CC BY-NC-SA). 비상업 용도로만 운영합니다.</p>
+</main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

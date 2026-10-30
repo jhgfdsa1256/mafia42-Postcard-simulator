@@ -1,0 +1,35 @@
+{
+ "_comment": "형식 예시입니다. 실제 엽서가 아닙니다. 이벤트 엽서는 source가 event이고 price가 null이면 구매 대상에서 빠집니다. 마이너스 엽서는 fame을 음수로 적습니다.",
+ "cards": [
+  {
+   "id": "example-event-plus",
+   "name": "(예시) 이벤트 엽서",
+   "image": "img/example-plus.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 5
+   },
+   "days": {
+    "type": "fixed",
+    "value": 7
+   }
+  },
+  {
+   "id": "example-event-minus",
+   "name": "(예시) 마이너스 엽서",
+   "image": "img/example-minus.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": -3
+   },
+   "days": {
+    "type": "fixed",
+    "value": 7
+   }
+  }
+ ]
+}
