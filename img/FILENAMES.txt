@@ -1,0 +1,47 @@
+엽서 이미지 파일명 (data/cards.json의 image 경로와 같아야 합니다)
+
+normal.webp	일반엽서
+advanced.webp	고급엽서
+dice.webp	주사위엽서
+surprise.webp	깜짝엽서
+love-letter.webp	러브레터
+imperial-edict.webp	황제의 칙서
+new-year-money.webp	세뱃돈
+anniv-4.webp	4주년 기념 엽서
+anniv-10.webp	10주년 기념 엽서
+recommendation.webp	추천장
+toy.webp	장난감 엽서
+trump.webp	트럼프 엽서
+apology.webp	반성문
+beach.webp	해변의 엽서
+fullmoon-1.webp	보름달 엽서(+1)
+fullmoon-5.webp	보름달 엽서(+5)
+chuseok.webp	한가위 기념 엽서
+ghost.webp	유령 엽서
+halloween.webp	할로윈 기념 엽서
+blank-check.webp	백지수표
+santa.webp	산타 엽서
+christmas.webp	크리스마스 기념 엽서
+butterfly.webp	나비 문양 엽서
+butterfly-custom.webp	나비 문양 엽서(커스텀)
+noble.webp	고귀한 엽서
+bond.webp	결속의 엽서
+gratitude.webp	보은의 엽서
+uma-invite.webp	우마게임 초대장
+timecapsule-2014.webp	2014 타임캡슐
+timecapsule-2015.webp	2015 타임캡슐
+timecapsule-2016.webp	2016 타임캡슐
+timecapsule-2017.webp	2017 타임캡슐
+timecapsule-2018.webp	2018 타임캡슐
+timecapsule-2019.webp	2019 타임캡슐
+aprilfools-gyeong.webp	만우절 엽서(경엽)
+aprilfools-jing.webp	만우절 엽서(징엽)
+aprilfools-old-jing.webp	만우절 엽서(낡징엽)
+aprilfools-mangseong.webp	만우절 엽서(망성)
+aprilfools-authority.webp	만우절 엽서(권위)
+warning.webp	경고 엽서
+punish.webp	징벌의 엽서
+old-punish.webp	낡은 징벌의 엽서
+bad-grade.webp	망한 성적지
+authority.webp	권위의 엽서
+hell.webp	지옥의 엽서

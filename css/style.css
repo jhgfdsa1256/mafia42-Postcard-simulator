@@ -55,3 +55,10 @@ em{font-style:normal;font-size:11px;background:var(--bd);border-radius:5px;paddi
 .big{font-size:18px;font-weight:600}
 ul{margin:6px 0 0;padding-left:18px}
 ul.flat{margin:0}
+.chip .ov{width:96px;padding:6px 8px;font-size:13px}
+h3{font-size:14px;margin:12px 0 6px}
+h3:first-child{margin-top:0}
+.borders{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px}
+.bd{flex-direction:row;align-items:flex-start;gap:8px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;color:var(--fg);font-size:14px}
+.bd small{display:block;color:var(--mut);font-size:11px;line-height:1.35}
+.big-btn{flex:1}

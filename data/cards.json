@@ -1,6 +1,6 @@
 {
- "version": 1,
- "note": "기본 4종은 커뮤니티 자료와 사용자 제공 확률표 기준입니다. 나무위키에서 수집한 엽서로 이 파일을 채우세요. 형식은 README.md 참고.",
+ "version": 4,
+ "note": "명성이 null인 엽서는 값을 직접 입력해야 계산됩니다. group은 명성이 null일 때 plus/minus 표시용, askFame은 우체통 목록에 명성 입력 칸을 보여 줄지, note는 화면에 보여 줄 설명입니다.",
  "cards": [
   {
    "id": "normal",
@@ -36,24 +36,6 @@
    "days": {
     "type": "fixed",
     "value": 30
-   }
-  },
-  {
-   "id": "surprise",
-   "name": "깜짝엽서",
-   "image": "img/surprise.webp",
-   "source": "shop",
-   "price": {
-    "currency": "루블",
-    "amount": 42000
-   },
-   "fame": {
-    "type": "fixed",
-    "value": 42
-   },
-   "days": {
-    "type": "fixed",
-    "value": 5
    }
   },
   {
@@ -278,6 +260,673 @@
     "type": "uniform",
     "min": 1,
     "max": 40
+   }
+  },
+  {
+   "id": "surprise",
+   "name": "깜짝엽서",
+   "image": "img/surprise.webp",
+   "source": "shop",
+   "price": {
+    "currency": "루블",
+    "amount": 42000
+   },
+   "fame": {
+    "type": "fixed",
+    "value": 42
+   },
+   "days": {
+    "type": "fixed",
+    "value": 5
+   }
+  },
+  {
+   "id": "love-letter",
+   "name": "러브레터",
+   "image": "img/love-letter.webp",
+   "source": "shop",
+   "price": {
+    "currency": "루나",
+    "amount": 10
+   },
+   "fame": {
+    "type": "fixed",
+    "value": 40
+   },
+   "days": {
+    "type": "fixed",
+    "value": 14
+   }
+  },
+  {
+   "id": "imperial-edict",
+   "name": "황제의 칙서",
+   "image": "img/imperial-edict.webp",
+   "source": "shop",
+   "price": {
+    "currency": "루나",
+    "amount": 100
+   },
+   "fame": null,
+   "days": {
+    "type": "fixed",
+    "value": 100
+   },
+   "group": "plus",
+   "askFame": true,
+   "note": "보낸 사람의 명성에 비례합니다. 실제 값을 입력하세요."
+  },
+  {
+   "id": "new-year-money",
+   "name": "세뱃돈",
+   "image": "img/new-year-money.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 100
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "anniv-4",
+   "name": "4주년 기념 엽서",
+   "image": "img/anniv-4.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 80
+   },
+   "days": {
+    "type": "fixed",
+    "value": 4
+   }
+  },
+  {
+   "id": "anniv-10",
+   "name": "10주년 기념 엽서",
+   "image": "img/anniv-10.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 10
+   },
+   "days": {
+    "type": "fixed",
+    "value": 10
+   }
+  },
+  {
+   "id": "recommendation",
+   "name": "추천장",
+   "image": "img/recommendation.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 100
+   }
+  },
+  {
+   "id": "toy",
+   "name": "장난감 엽서",
+   "image": "img/toy.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 3
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "trump",
+   "name": "트럼프 엽서",
+   "image": "img/trump.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "table",
+    "values": [
+     [
+      1,
+      25
+     ],
+     [
+      2,
+      25
+     ],
+     [
+      3,
+      25
+     ],
+     [
+      4,
+      25
+     ]
+    ]
+   },
+   "days": {
+    "type": "fixed",
+    "value": 4
+   },
+   "askFame": true,
+   "note": "받을 때 +1~+4가 25%씩 정해집니다. 실제 값을 알면 입력하세요."
+  },
+  {
+   "id": "apology",
+   "name": "반성문",
+   "image": "img/apology.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 14
+   },
+   "days": {
+    "type": "fixed",
+    "value": 14
+   }
+  },
+  {
+   "id": "beach",
+   "name": "해변의 엽서",
+   "image": "img/beach.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 3
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "fullmoon-1",
+   "name": "보름달 엽서(+1)",
+   "image": "img/fullmoon-1.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 15
+   }
+  },
+  {
+   "id": "fullmoon-5",
+   "name": "보름달 엽서(+5)",
+   "image": "img/fullmoon-5.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 5
+   },
+   "days": {
+    "type": "fixed",
+    "value": 15
+   }
+  },
+  {
+   "id": "chuseok",
+   "name": "한가위 기념 엽서",
+   "image": "img/chuseok.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 3
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "ghost",
+   "name": "유령 엽서",
+   "image": "img/ghost.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 3
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "halloween",
+   "name": "할로윈 기념 엽서",
+   "image": "img/halloween.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 2
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "blank-check",
+   "name": "백지수표",
+   "image": "img/blank-check.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 20
+   },
+   "days": {
+    "type": "fixed",
+    "value": 10
+   },
+   "askFame": true,
+   "note": "기본 +20. 보낸 사람의 수집포인트가 높으면 더 올라갑니다. 실제 값을 입력하세요."
+  },
+  {
+   "id": "santa",
+   "name": "산타 엽서",
+   "image": "img/santa.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 4
+   },
+   "days": {
+    "type": "fixed",
+    "value": 20
+   }
+  },
+  {
+   "id": "christmas",
+   "name": "크리스마스 기념 엽서",
+   "image": "img/christmas.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 2
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "butterfly",
+   "name": "나비 문양 엽서",
+   "image": "img/butterfly.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "sequence",
+    "cap": 13
+   },
+   "days": {
+    "type": "fixed",
+    "value": 10
+   },
+   "note": "받을 때 우체통에 이미 있던 나비엽 개수만큼 올라갑니다 (최대 +13). 6장이 차례로 들어오면 +0, +1, +2, +3, +4, +5. 중간에 빠진 장이 있으면 '커스텀'을 쓰세요."
+  },
+  {
+   "id": "butterfly-custom",
+   "name": "나비 문양 엽서(커스텀)",
+   "image": "img/butterfly-custom.webp",
+   "source": "event",
+   "price": null,
+   "fame": null,
+   "group": "plus",
+   "askFame": true,
+   "days": {
+    "type": "fixed",
+    "value": 10
+   },
+   "note": "중간에 빠진 나비엽이 있어서 순서대로 계산이 안 맞을 때 씁니다. 장마다 실제 명성(0~13)을 입력하세요."
+  },
+  {
+   "id": "noble",
+   "name": "고귀한 엽서",
+   "image": "img/noble.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 5
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "bond",
+   "name": "결속의 엽서",
+   "image": "img/bond.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 3
+   },
+   "days": {
+    "type": "fixed",
+    "value": 3
+   }
+  },
+  {
+   "id": "gratitude",
+   "name": "보은의 엽서",
+   "image": "img/gratitude.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 4
+   },
+   "days": {
+    "type": "fixed",
+    "value": 20
+   }
+  },
+  {
+   "id": "uma-invite",
+   "name": "우마게임 초대장",
+   "image": "img/uma-invite.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 2
+   },
+   "days": {
+    "type": "fixed",
+    "value": 40
+   }
+  },
+  {
+   "id": "timecapsule-2014",
+   "name": "2014 타임캡슐",
+   "image": "img/timecapsule-2014.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "timecapsule-2015",
+   "name": "2015 타임캡슐",
+   "image": "img/timecapsule-2015.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "timecapsule-2016",
+   "name": "2016 타임캡슐",
+   "image": "img/timecapsule-2016.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "timecapsule-2017",
+   "name": "2017 타임캡슐",
+   "image": "img/timecapsule-2017.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "timecapsule-2018",
+   "name": "2018 타임캡슐",
+   "image": "img/timecapsule-2018.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "timecapsule-2019",
+   "name": "2019 타임캡슐",
+   "image": "img/timecapsule-2019.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 1
+   }
+  },
+  {
+   "id": "aprilfools-gyeong",
+   "name": "만우절 엽서(경엽)",
+   "image": "img/aprilfools-gyeong.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "aprilfools-jing",
+   "name": "만우절 엽서(징엽)",
+   "image": "img/aprilfools-jing.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 10
+   },
+   "days": {
+    "type": "fixed",
+    "value": 15
+   }
+  },
+  {
+   "id": "aprilfools-old-jing",
+   "name": "만우절 엽서(낡징엽)",
+   "image": "img/aprilfools-old-jing.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 10
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "aprilfools-mangseong",
+   "name": "만우절 엽서(망성)",
+   "image": "img/aprilfools-mangseong.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 7
+   },
+   "days": {
+    "type": "fixed",
+    "value": 14
+   }
+  },
+  {
+   "id": "aprilfools-authority",
+   "name": "만우절 엽서(권위)",
+   "image": "img/aprilfools-authority.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": 80
+   },
+   "days": {
+    "type": "fixed",
+    "value": 15
+   }
+  },
+  {
+   "id": "warning",
+   "name": "경고 엽서",
+   "image": "img/warning.webp",
+   "source": "shop",
+   "price": {
+    "currency": "루블",
+    "amount": 6000
+   },
+   "fame": {
+    "type": "fixed",
+    "value": -1
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "punish",
+   "name": "징벌의 엽서",
+   "image": "img/punish.webp",
+   "source": "shop",
+   "price": {
+    "currency": "루나",
+    "amount": 100
+   },
+   "fame": {
+    "type": "fixed",
+    "value": -10
+   },
+   "days": {
+    "type": "fixed",
+    "value": 15
+   }
+  },
+  {
+   "id": "old-punish",
+   "name": "낡은 징벌의 엽서",
+   "image": "img/old-punish.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": -10
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
+   }
+  },
+  {
+   "id": "bad-grade",
+   "name": "망한 성적지",
+   "image": "img/bad-grade.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": -7
+   },
+   "days": {
+    "type": "fixed",
+    "value": 14
+   }
+  },
+  {
+   "id": "authority",
+   "name": "권위의 엽서",
+   "image": "img/authority.webp",
+   "source": "event",
+   "price": null,
+   "fame": null,
+   "days": {
+    "type": "fixed",
+    "value": 15
+   },
+   "group": "minus",
+   "askFame": true,
+   "note": "보낸 사람의 명성에 비례해 깎입니다. 실제 값을 음수로 입력하세요."
+  },
+  {
+   "id": "hell",
+   "name": "지옥의 엽서",
+   "image": "img/hell.webp",
+   "source": "event",
+   "price": null,
+   "fame": {
+    "type": "fixed",
+    "value": -15
+   },
+   "days": {
+    "type": "fixed",
+    "value": 30
    }
   }
  ]

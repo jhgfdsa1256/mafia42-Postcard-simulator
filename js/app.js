@@ -1,7 +1,7 @@
-import { GUILDS, normalizeCard, optimize, recallValues } from './engine.js';
+import { GUILDS, SEND_BORDERS, RECV_BORDERS, normalizeCard, effectiveCard, optimize, recallValues, compareBorders } from './engine.js';
 import { fetchMailbox, ProfileApiError } from './profile.js';
 import * as store from './storage.js';
-import { esc, thumb, fameText, priceText, renderResults } from './view.js';
+import { esc, thumb, fameText, priceText, renderResults, renderBorderCompare } from './view.js';
 
 const $ = (id) => document.getElementById(id);
 let cards = [];
@@ -9,7 +9,8 @@ let state = defaultState();
 let saveTimer = null;
 
 function defaultState() {
-  return { nick: '', rub: 100000, luna: 0, step: 0, guild: 18, famous: false, days: 360, holdings: [], exclude: [] };
+  return { nick: '', rub: 100000, luna: 0, step: 0, guild: 18, famous: false, days: 360, holdings: [], exclude: [], overrides: {},
+    borders: { send: 'none', recv: 'none', prob: 'sure', recvDurPct: 10 } };
 }
 const cardById = (id) => cards.find((c) => c.id === id);
 
@@ -50,25 +51,48 @@ function renderHoldings() {
   box.innerHTML = state.holdings.map((h, i) => {
     const c = cardById(h.id);
     if (!c) return `<div class="hold" data-i="${i}"><span class="hname">알 수 없는 엽서 (${esc(h.id)})<small>cards.json에서 삭제된 항목</small></span><button class="x" data-del="${i}">삭제</button></div>`;
-    return `<div class="hold${c.fameMean < 0 ? ' neg' : ''}" data-i="${i}">${thumb(c)}`
-      + `<span class="hname">${esc(c.name)}<small>${esc(fameText(c))}</small></span>`
+    const fameInput = c.incomplete || c.askFame
+      ? `<label>명성 (${c.incomplete ? '필수' : '선택'})<input type="number" step="any" inputmode="decimal" data-f="fame" value="${Number.isFinite(h.fame) ? h.fame : ''}" placeholder="${c.incomplete ? (c.group === 'minus' ? '예: -5' : '예: 5') : '기본 ' + Math.round(c.fameMean * 100) / 100}"></label>`
+      : '';
+    const startInput = c.sequence
+      ? `<label>앞서 받은 개수<input type="number" min="0" inputmode="numeric" data-f="start" value="${h.start || 0}"></label>`
+      : '';
+    return `<div class="hold${c.group === 'minus' ? ' neg' : ''}" data-i="${i}">${thumb(c)}`
+      + `<span class="hname">${esc(c.name)}<small>${esc(fameText(c))}</small>${c.note ? `<small>${esc(c.note)}</small>` : ''}</span>`
       + `<label>수량<input type="number" min="1" inputmode="numeric" data-f="count" value="${h.count}"></label>`
       + `<label>남은 일수<input type="number" min="1" inputmode="numeric" data-f="remain" value="${h.remain}"></label>`
+      + startInput
+      + fameInput
       + `<button class="x" data-del="${i}" aria-label="삭제">×</button></div>`;
   }).join('');
 }
 
 function renderPicker() {
   $('picker').innerHTML = cards.map((c) =>
-    `<button type="button" class="tile${c.fameMean < 0 ? ' neg' : ''}" data-add="${esc(c.id)}">${thumb(c)}<span>${esc(c.name)}</span><small>${esc(fameText(c))}</small></button>`
+    `<button type="button" class="tile${c.group === 'minus' ? ' neg' : ''}" data-add="${esc(c.id)}">${thumb(c)}<span>${esc(c.name)}</span><small>${esc(fameText(c))}</small></button>`
   ).join('');
 }
 
 function renderShop() {
-  const shop = cards.filter((c) => c.purchasable);
-  $('shop').innerHTML = shop.map((c) =>
-    `<label class="chip"><input type="checkbox" data-shop="${esc(c.id)}" ${state.exclude.includes(c.id) ? '' : 'checked'}>${thumb(c)}<span>${esc(c.name)}<small>${esc(priceText(c))}</small></span></label>`
+  // 내 우체통에 넣으려고 사는 엽서만 보여 줍니다 (마이너스 엽서는 상대에게 보내는 용도라 제외)
+  const shop = cards.filter((c) => c.purchasable && c.group !== 'minus');
+  $('shop').innerHTML = shop.map((c) => {
+    const ov = c.incomplete
+      ? `<input class="ov" type="number" step="any" inputmode="decimal" data-ov="${esc(c.id)}" placeholder="명성 입력" value="${Number.isFinite(state.overrides[c.id]) ? state.overrides[c.id] : ''}">`
+      : '';
+    return `<label class="chip"><input type="checkbox" data-shop="${esc(c.id)}" ${state.exclude.includes(c.id) ? '' : 'checked'}>${thumb(c)}<span>${esc(c.name)}<small>${esc(priceText(c))} · ${esc(fameText(c))}</small></span>${ov}</label>`;
+  }).join('');
+}
+
+function renderBorders() {
+  const list = (kind, items) => items.map((b) =>
+    `<label class="bd"><input type="checkbox" data-bd="${kind}" data-id="${b.id}" ${state.borders[kind] === b.id ? 'checked' : ''}><span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></span></label>`
   ).join('');
+  $('sendBorders').innerHTML = list('send', SEND_BORDERS);
+  $('recvBorders').innerHTML = list('recv', RECV_BORDERS);
+  $('prob').value = state.borders.prob || 'sure';
+  $('recvDur').value = state.borders.recvDurPct ?? 10;
+  $('durWrap').hidden = state.borders.recv !== 'rbigdur';
 }
 
 function renderSavedList() {
@@ -78,22 +102,38 @@ function renderSavedList() {
 }
 
 function renderAll() {
-  renderSituation(); renderHoldings(); renderShop(); renderSavedList();
+  renderSituation(); renderHoldings(); renderShop(); renderBorders(); renderSavedList();
 }
 
 /* ---------- 계산 ---------- */
-function calc() {
-  const P = {
+function buildP() {
+  // 명성이 ?인 엽서는 사용자가 입력한 값으로 채웁니다 (직접 입력한 값은 테두리로 바꾸지 않습니다)
+  const filled = cards.map((c) => (c.incomplete && Number.isFinite(state.overrides[c.id])
+    ? { ...c, fameMean: state.overrides[c.id], fameDist: [[state.overrides[c.id], 1]], incomplete: false, typed: true, group: state.overrides[c.id] < 0 ? 'minus' : c.group }
+    : c));
+  return {
     ...state,
-    cards,
+    cards: filled,
     days: Math.min(1500, Math.max(1, Math.floor(state.days) || 360)),
     step: Math.max(0, Math.floor(state.step) || 0),
     holdings: state.holdings.filter((h) => cardById(h.id)),
   };
+}
+
+function calc() {
+  const P = buildP();
   const R = optimize(P);
   const recall = recallValues(P, R.bestU);
   $('out').innerHTML = renderResults(P, R, recall);
   $('out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function compare() {
+  $('cmpOut').innerHTML = '<p class="mut">테두리를 비교하는 중입니다…</p>';
+  setTimeout(() => {
+    $('cmpOut').innerHTML = renderBorderCompare(compareBorders(buildP()));
+    $('cmpOut').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 30);
 }
 
 /* ---------- 입력 연결 ---------- */
@@ -113,7 +153,13 @@ function bind() {
   $('holdings').addEventListener('input', (e) => {
     const row = e.target.closest('[data-i]');
     if (!row || !e.target.dataset.f) return;
-    state.holdings[+row.dataset.i][e.target.dataset.f] = Math.max(1, Math.floor(+e.target.value || 1));
+    const h = state.holdings[+row.dataset.i];
+    if (e.target.dataset.f === 'fame') {
+      if (e.target.value === '' || !Number.isFinite(+e.target.value)) delete h.fame; else h.fame = +e.target.value;
+    } else {
+      const min = e.target.dataset.f === 'start' ? 0 : 1;
+      h[e.target.dataset.f] = Math.max(min, Math.floor(+e.target.value || min));
+    }
     scheduleSave();
   });
   $('holdings').addEventListener('click', (e) => {
@@ -126,7 +172,7 @@ function bind() {
     const b = e.target.closest('[data-add]');
     if (!b) return;
     const c = cardById(b.dataset.add);
-    state.holdings.push({ id: c.id, count: 1, remain: c.maxDay });
+    state.holdings.push({ id: c.id, count: 1, remain: effectiveCard(c, state.borders).maxDay });
     renderHoldings(); scheduleSave();
   });
   $('shop').addEventListener('change', (e) => {
@@ -136,8 +182,30 @@ function bind() {
     if (!e.target.checked) state.exclude.push(id);
     scheduleSave();
   });
+  $('shop').addEventListener('input', (e) => {
+    const id = e.target.dataset.ov;
+    if (!id) return;
+    if (e.target.value === '' || !Number.isFinite(+e.target.value)) delete state.overrides[id]; else state.overrides[id] = +e.target.value;
+    scheduleSave();
+  });
+
+  // 테두리: 송신·수신 각각 하나만 선택 (체크하면 같은 그룹의 다른 항목은 해제)
+  const onBorder = (e) => {
+    const kind = e.target.dataset.bd;
+    if (!kind) return;
+    state.borders[kind] = e.target.checked ? e.target.dataset.id : 'none';
+    renderBorders(); scheduleSave();
+  };
+  $('sendBorders').addEventListener('change', onBorder);
+  $('recvBorders').addEventListener('change', onBorder);
+  $('prob').addEventListener('change', () => { state.borders.prob = $('prob').value; scheduleSave(); });
+  $('recvDur').addEventListener('input', () => {
+    state.borders.recvDurPct = Math.min(100, Math.max(0, Math.floor(+$('recvDur').value || 0)));
+    scheduleSave();
+  });
 
   $('calc').addEventListener('click', calc);
+  $('cmp').addEventListener('click', compare);
   $('loadNick').addEventListener('click', loadProfile);
   $('savedList').addEventListener('change', () => {
     const s = store.get($('savedList').value);
