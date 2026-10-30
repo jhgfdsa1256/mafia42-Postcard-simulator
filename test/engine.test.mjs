@@ -103,7 +103,7 @@ const near = (a, b, eps = 1) => assert.ok(Math.abs(a - b) <= eps, `${a} !== ${b}
   assert.equal(auth.group, 'minus');
 }
 
-// 10) 러브레터: 루나 10개로 명성 +40 × 14일 → 실버 기준 66,080루블
+// 10) 러브레터: 루나 100개로 명성 +40 × 14일 → 실버 기준 66,080루블
 {
   const ll = cardStats(shop.find((c) => c.id === 'love-letter'), base);
   near(ll.rubNet, 66080);

@@ -48,6 +48,50 @@ export function renderBorderCompare(cmp) {
     + '<p class="sub">★은 가장 높은 항목입니다. 한쪽을 바꿀 때 다른 쪽 선택은 그대로 둡니다. 송신 테두리 중 루블테를 뺀 효과는 교환 상대도 같은 테두리를 쓴다고 가정한 값입니다.</p></div>';
 }
 
+
+const dayLabel = (d) => (d === 0 ? '오늘' : d + '일');
+
+/** 보유 루블 꺾은선 그래프. 아래 날짜는 우체통 확장 또는 엽서 구매가 있었던 날만 표시합니다. */
+export function rubChart(tl) {
+  if (!tl || tl.length < 2) return '<span class="mut">표시할 데이터가 없습니다.</span>';
+  const ev = tl.filter((x) => x.up || x.buy);
+  const H = 240, padL = 62, padR = 16, padT = 14, padB = 46;
+  const W = Math.max(640, padL + padR + Math.max(tl.length * 3, ev.length * 16));
+  const maxD = tl[tl.length - 1].day || 1;
+  const vals = tl.map((x) => x.rub);
+  let lo = Math.min(0, ...vals), hi = Math.max(...vals);
+  if (hi === lo) hi = lo + 1;
+  const X = (d) => padL + ((W - padL - padR) * d) / maxD;
+  const Y = (v) => padT + (H - padT - padB) * (1 - (v - lo) / (hi - lo));
+  const compact = (n) => (Math.abs(n) >= 100000000 ? fmt1(n / 100000000) + '억' : Math.abs(n) >= 10000 ? fmt1(n / 10000) + '만' : fmt(n));
+  let s = `<svg class="chart" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="보유 루블 추이">`;
+  for (let k = 0; k <= 4; k++) {
+    const v = lo + ((hi - lo) * k) / 4, y = Y(v);
+    s += `<line x1="${padL}" x2="${W - padR}" y1="${y}" y2="${y}" class="grid"/><text x="${padL - 6}" y="${y + 4}" text-anchor="end" class="ax">${compact(v)}</text>`;
+  }
+  s += `<polyline class="ln" points="${tl.map((x) => X(x.day).toFixed(1) + ',' + Y(x.rub).toFixed(1)).join(' ')}"/>`;
+  ev.forEach((x) => {
+    const cx = X(x.day).toFixed(1), cy = Y(x.rub).toFixed(1);
+    s += `<circle cx="${cx}" cy="${cy}" r="${x.up ? 4 : 2.5}" class="${x.up ? 'dup' : 'dbuy'}"><title>${dayLabel(x.day)} · ${fmt(x.rub)} 루블${x.up ? ' · 우체통 확장' : ''}${x.buy ? ' · 엽서 구매' : ''}</title></circle>`;
+    s += `<text transform="translate(${cx},${H - padB + 12}) rotate(-60)" text-anchor="end" class="ax${x.up ? ' upx' : ''}">${dayLabel(x.day)}</text>`;
+  });
+  s += '</svg>';
+  return '<div class="scroll">' + s + '</div><p class="sub">아래 날짜는 우체통을 확장했거나(큰 점) 엽서를 산(작은 점) 날만 표시합니다. 값은 그날 구매·확장을 마친 뒤, 수입을 받기 전 보유 루블입니다.</p>';
+}
+
+/** 우체통 확장 예상 일정 표 */
+export function upgradeTable(ups) {
+  if (!ups || !ups.length) return '<span class="mut">확장하지 않는 것이 최선입니다.</span>';
+  let h = '<div class="scroll win-tbl"><table><tr><th>시점</th><th>현재 칸수</th><th>다음 칸수</th><th>필요 루블</th><th>소요 시간</th></tr>';
+  let prev = 0;
+  ups.forEach((u, i) => {
+    const gap = u.day - prev;
+    h += `<tr><td>${dayLabel(u.day)}${u.day === 0 ? '' : '째'}</td><td>${42 + 10 * (u.step - 1)}</td><td>${42 + 10 * u.step}</td><td>${fmt(u.cost)}</td><td>${i === 0 ? (gap === 0 ? '지금 바로' : `지금부터 ${gap}일`) : (gap === 0 ? '같은 날' : `직전 확장 후 ${gap}일`)}</td></tr>`;
+    prev = u.day;
+  });
+  return h + '</table></div>';
+}
+
 function statsTable(P) {
   const shop = P.cards.filter((c) => c.purchasable);
   const rubShop = shop.map((c) => ({ c, s: cardStats(c, P) })).filter((x) => x.s && x.c.currency === '루블' && x.s.rubNet > 0);
@@ -86,10 +130,11 @@ export function renderResults(P, R, recall) {
   if (B.skipped > 0) h += `<div class="box bad">명성 값이 없어 계산에서 뺀 엽서가 ${fmt(B.skipped)}장 있습니다. 우체통 목록에서 해당 엽서의 "명성" 칸을 채워 주세요.</div>`;
   h += statsTable(P);
 
-  h += `<h2>최적 계획 (${P.days}일)</h2><div class="box"><div class="big">목표 우체통 ${42 + 10 * B.step}칸</div>`
+  const cur = 42 + 10 * P.step, tgt = 42 + 10 * B.step;
+  h += `<h2>최적 계획 (${P.days}일)</h2><div class="box"><div class="big">현재 우체통 ${cur}칸 → 목표 ${tgt}칸${tgt > cur ? ` (+${tgt - cur}칸)` : ' (확장 없음)'}</div>`
     + `<div>기간 종료 시 <b>${fmt(B.rub)} 루블 · ${fmt(B.luna)} 루나</b></div>`
     + `<div class="mut">적용 테두리: ${esc(borderLabel(P.borders))}</div>`
-    + `<div class="mut">확장 없이 현재 칸수 유지: ${fmt(Z.rub)} 루블 · ${fmt(Z.luna)} 루나 → 확장 이득 <span class="${cls(gain)}">${sg(gain)} 루블</span></div></div>`;
+    + `<div class="mut">확장 없이 현재 ${cur}칸 유지: ${fmt(Z.rub)} 루블 · ${fmt(Z.luna)} 루나 → 확장 이득 <span class="${cls(gain)}">${sg(gain)} 루블</span></div></div>`;
 
   h += '<h2>오늘의 추천</h2><div class="box">';
   const upToday = B.ups.filter((u) => u.day === 0);
@@ -103,32 +148,24 @@ export function renderResults(P, R, recall) {
 
   h += recallSection(recall);
 
-  h += '<h2>우체통 확장 일정</h2><div class="box">';
-  if (B.ups.length) {
-    h += '<div class="scroll"><table><tr><th>시점</th><th>늘릴 칸수</th><th>비용</th></tr>';
-    const long = B.ups.length > 30;
-    B.ups.forEach((u, i) => {
-      if (long && i >= 15 && i < B.ups.length - 5) { if (i === 15) h += '<tr><td colspan="3" class="mut c">…</td></tr>'; return; }
-      h += `<tr><td>${u.day}일째</td><td>${42 + 10 * u.step}</td><td>${fmt(u.cost)}</td></tr>`;
-    });
-    h += '</table></div>';
-  } else h += '<span class="mut">확장하지 않는 것이 최선입니다.</span>';
-  h += '</div>';
+  h += '<h2>보유 루블 추이</h2><div class="box">' + rubChart(B.tl) + '</div>';
+  h += '<h2>우체통 확장 예상 일정</h2><div class="box">' + upgradeTable(B.ups) + '</div>';
 
-  h += '<h2>목표 칸수별 비교</h2><div class="box scroll"><table><tr><th>목표 칸수</th><th>최종 루블</th><th>최종 루나</th><th>최선 대비</th></tr>';
+  h += '<h2>목표 칸수별 비교 (현재 우체통에서 시작)</h2><div class="box scroll"><table><tr><th>목표 칸수</th><th>최종 루블</th><th>최종 루나</th><th>최선 대비</th></tr>';
   const cand = R.res.filter((x) => x.u <= R.bestU);
   const picks = new Set([0, cand.length - 1]);
   for (let k = 1; k < 7; k++) picks.add(Math.round((k * (cand.length - 1)) / 7));
   [...picks].sort((a, b) => a - b).forEach((i) => {
     const x = cand[i];
-    h += `<tr${x.u === R.bestU ? ' class="best"' : ''}><td>${42 + 10 * x.u}${x.u === R.bestU ? ' (최적)' : ''}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td><td>${sg(x.rub - B.rub)}</td></tr>`;
+    h += `<tr${x.u === R.bestU ? ' class="best"' : ''}><td>${42 + 10 * x.u}${x.u === P.step ? ' (현재 · 확장 없음)' : ''}${x.u === R.bestU ? ' (최적)' : ''}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td><td>${sg(x.rub - B.rub)}</td></tr>`;
   });
   h += '</table><p class="sub">최적 칸수를 넘는 목표는 남은 기간 안에 비용을 회수하지 못해 사지 않으므로 결과가 같습니다.</p></div>';
 
-  h += '<h2>30일 단위 추이</h2><div class="box scroll"><table><tr><th>일</th><th>칸수</th><th>사용 중</th><th>명성 합</th><th>루블</th><th>루나</th></tr>';
-  const tl = B.tl.length > 16 ? B.tl.filter((x, i) => i % Math.ceil(B.tl.length / 14) === 0 || i === B.tl.length - 1) : B.tl;
-  tl.forEach((x) => { h += `<tr><td>${x.day}</td><td>${x.slots}</td><td>${fmt(x.N)}</td><td class="${cls(x.F)}">${fmt(x.F)}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td></tr>`; });
-  h += '</table></div>';
+  h += '<h2>일별 추이</h2><div class="box"><div class="scroll win-tbl"><table><tr><th>일</th><th>칸수</th><th>사용 중</th><th>명성 합</th><th>루블</th><th>루나</th></tr>';
+  B.tl.forEach((x) => {
+    h += `<tr${x.up ? ' class="best"' : ''}><td>${x.day === 0 ? '오늘' : x.day + '일째'}${x.up ? ' · 확장' : ''}</td><td>${x.slots}</td><td>${fmt(x.N)}</td><td class="${cls(x.F)}">${fmt(x.F)}</td><td>${fmt(x.rub)}</td><td>${fmt(x.luna)}</td></tr>`;
+  });
+  h += '</table></div><p class="sub">매일 그날의 구매·확장을 판단해서 계산합니다. 표의 수치는 그날 구매·확장을 마친 뒤, 그날 수입을 받기 전 값이고, 확장한 날은 색으로 표시됩니다.</p></div>';
 
   h += '<div class="box"><b>기간 중 구매 합계</b><ul>';
   const tot = new Map();

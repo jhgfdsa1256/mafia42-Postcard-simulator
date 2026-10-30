@@ -230,6 +230,7 @@ export function simulate(P, targetU, rec = false) {
       const k = exp[t][i];
       if (k) { N -= k; F -= k * types[i].fameMean; }
     }
+    let boughtToday = false;
     const r = D - t;
     const negToday = x2 && F < 0;
     const ev = buyList.map((c0) => {
@@ -246,7 +247,7 @@ export function simulate(P, targetU, rec = false) {
       if (c.currency === '루블') rub -= k * c.price; else luna -= k * c.price;
       rub += bonus * k; // 루블테: 모든 판정 이후 보낸 엽서 1장당 루블 획득
       for (const x of c.days) exp[t + x.d][e.i] += k * x.p;
-      N += k; F += k * c.fameMean; free -= k; bought[e.i] += k;
+      N += k; F += k * c.fameMean; free -= k; bought[e.i] += k; boughtToday = true;
       if (t === 0) {
         const ex = today.find((x) => x.name === c.name);
         if (ex) { ex.k += k; ex.cost += k * c.price; }
@@ -303,7 +304,7 @@ export function simulate(P, targetU, rec = false) {
         } else break;
       }
     }
-    if (rec && t % 30 === 0) tl.push({ day: t, step, slots: 42 + 10 * step, N, F, rub: Math.round(rub), luna });
+    if (rec) tl.push({ day: t, step, slots: 42 + 10 * step, N, F, rub: Math.round(rub), luna, up: ups.some((u) => u.day === t), buy: boughtToday });
     rub += income(F);
     luna += Math.max(0, Math.floor(F / 42));
   }
